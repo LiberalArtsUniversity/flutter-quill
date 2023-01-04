@@ -73,6 +73,7 @@ class Rules {
           return result..trim();
         }
       } catch (e) {
+        print(e.toString());
         rethrow;
       }
     }

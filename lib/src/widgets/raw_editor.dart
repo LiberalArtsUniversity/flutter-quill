@@ -897,7 +897,15 @@ class RawEditorState extends EditorState
     if (selection.isCollapsed) {
       return;
     }
-    Clipboard.setData(ClipboardData(text: selection.textInside(text)));
+
+    final offset = selection.start;
+    var node = controller.queryNode(offset);
+    if (node != null) {
+      Clipboard.setData(
+          ClipboardData(text: jsonEncode(node.toDelta().toJson()[0])));
+    } else {
+      Clipboard.setData(ClipboardData(text: selection.textInside(text)));
+    }
 
     if (cause == SelectionChangedCause.toolbar) {
       bringIntoView(textEditingValue.selection.extent);
@@ -971,11 +979,32 @@ class RawEditorState extends EditorState
     }
     // Snapshot the input before using `await`.
     // See https://github.com/flutter/flutter/issues/11427
+
     final data = await Clipboard.getData(Clipboard.kTextPlain);
     if (data == null) {
       return;
     }
 
+    var json = jsonDecode(data.text!);
+    if (json is Map) {
+      final index = textEditingValue.selection.baseOffset;
+      final length = textEditingValue.selection.extentOffset - index;
+      final embedType = json['insert'].keys.toList()[0];
+      final embed = Embeddable(embedType, json['insert'][embedType]);
+
+      final result = widget.controller.replaceText(index, length, embed, null);
+      json['attributes'].forEach((key, value) {
+        widget.controller.formatText(
+            getImageNode(widget.controller, index + 1).item1,
+            1,
+            Attribute(
+              key,
+              AttributeScope.INLINE,
+              value,
+            ));
+      });
+      return;
+    }
     _replaceText(
         ReplaceTextIntent(textEditingValue, data.text!, selection, cause));
 
