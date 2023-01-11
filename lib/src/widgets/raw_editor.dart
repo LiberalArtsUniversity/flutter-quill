@@ -532,6 +532,9 @@ class RawEditorState extends EditorState
     } else if (attrs.containsKey(Attribute.align.key)) {
       return defaultStyles!.align!.verticalSpacing;
     }
+    // else if (attrs.containsKey(Attribute.lcInfo.key)) {
+    //   return defaultStyles!.lcInfo!.verticalSpacing;
+    // }
     return const Tuple2(0, 0);
   }
 
@@ -900,7 +903,12 @@ class RawEditorState extends EditorState
 
     final offset = selection.start;
     var node = controller.queryNode(offset);
-    if (node != null) {
+    print(selection.textInside(text) == '￼');
+    print(selection.textInside(text));
+    print(node != null);
+
+    if (node != null && selection.textInside(text) == '￼') {
+      print(node.toDelta().toJson());
       Clipboard.setData(
           ClipboardData(text: jsonEncode(node.toDelta().toJson()[0])));
     } else {
@@ -940,7 +948,16 @@ class RawEditorState extends EditorState
     if (selection.isCollapsed) {
       return;
     }
-    Clipboard.setData(ClipboardData(text: selection.textInside(text)));
+
+    final offset = selection.start;
+    var node = controller.queryNode(offset);
+
+    if (node != null && selection.textInside(text) == '￼') {
+      Clipboard.setData(
+          ClipboardData(text: jsonEncode(node.toDelta().toJson()[0])));
+    } else {
+      Clipboard.setData(ClipboardData(text: selection.textInside(text)));
+    }
     _replaceText(ReplaceTextIntent(textEditingValue, '', selection, cause));
 
     if (cause == SelectionChangedCause.toolbar) {
@@ -984,29 +1001,42 @@ class RawEditorState extends EditorState
     if (data == null) {
       return;
     }
+    var textValue = '';
+    try {
+      textValue = data.text!;
+      textValue = textValue
+          .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '\n')
+          .replaceAll('\n\n', '\n')
+          .replaceAll('\n\n', '\n');
+      var json = jsonDecode(data.text!);
+      if (json is Map) {
+        if (json['insert'] is Map) {
+          final index = textEditingValue.selection.baseOffset;
+          final length = textEditingValue.selection.extentOffset - index;
+          final embedType = json['insert'].keys.toList()[0];
+          final embed = Embeddable(embedType, json['insert'][embedType]);
 
-    var json = jsonDecode(data.text!);
-    if (json is Map) {
-      final index = textEditingValue.selection.baseOffset;
-      final length = textEditingValue.selection.extentOffset - index;
-      final embedType = json['insert'].keys.toList()[0];
-      final embed = Embeddable(embedType, json['insert'][embedType]);
+          final result =
+              widget.controller.replaceText(index, length, embed, null);
+          json['attributes'].forEach((key, value) {
+            widget.controller.formatText(
+                getImageNode(widget.controller, index + 1).item1,
+                1,
+                Attribute(
+                  key,
+                  AttributeScope.INLINE,
+                  value,
+                ));
+          });
+          return;
+        } else {
+          textValue = json['insert'];
+        }
+      }
+    } catch (_) {}
 
-      final result = widget.controller.replaceText(index, length, embed, null);
-      json['attributes'].forEach((key, value) {
-        widget.controller.formatText(
-            getImageNode(widget.controller, index + 1).item1,
-            1,
-            Attribute(
-              key,
-              AttributeScope.INLINE,
-              value,
-            ));
-      });
-      return;
-    }
     _replaceText(
-        ReplaceTextIntent(textEditingValue, data.text!, selection, cause));
+        ReplaceTextIntent(textEditingValue, textValue, selection, cause));
 
     if (cause == SelectionChangedCause.toolbar) {
       bringIntoView(textEditingValue.selection.extent);
