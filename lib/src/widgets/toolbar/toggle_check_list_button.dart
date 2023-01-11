@@ -13,6 +13,7 @@ class ToggleCheckListButton extends StatefulWidget {
     required this.attribute,
     this.iconSize = kDefaultIconSize,
     this.fillColor,
+    this.title,
     this.childBuilder = defaultToggleStyleButtonBuilder,
     this.iconTheme,
     Key? key,
@@ -22,6 +23,7 @@ class ToggleCheckListButton extends StatefulWidget {
   final double iconSize;
 
   final Color? fillColor;
+  final Widget? title;
 
   final QuillController controller;
 
@@ -96,6 +98,7 @@ class _ToggleCheckListButtonState extends State<ToggleCheckListButton> {
       widget.fillColor,
       _isToggled,
       _toggleAttribute,
+      widget.title,
       widget.iconSize,
       widget.iconTheme,
     );

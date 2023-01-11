@@ -112,6 +112,9 @@ class EditableTextBlock extends StatelessWidget {
     if (attrs.containsKey(Attribute.codeBlock.key)) {
       return defaultStyles!.code!.decoration;
     }
+    if (attrs.containsKey(Attribute.lcInfo.key)) {
+      return defaultStyles!.lcInfo!.decoration;
+    }
     return null;
   }
 
@@ -269,6 +272,8 @@ class EditableTextBlock extends StatelessWidget {
         lineSpacing = defaultStyles!.code!.lineSpacing;
       } else if (attrs.containsKey(Attribute.align.key)) {
         lineSpacing = defaultStyles!.align!.lineSpacing;
+      } else if (attrs.containsKey(Attribute.lcInfo.key)) {
+        lineSpacing = defaultStyles!.lcInfo!.lineSpacing;
       }
       top = lineSpacing.item1;
       bottom = lineSpacing.item2;

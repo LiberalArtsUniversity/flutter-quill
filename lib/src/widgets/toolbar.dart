@@ -31,6 +31,7 @@ export 'toolbar/indent_button.dart';
 export 'toolbar/link_style_button.dart';
 export 'toolbar/quill_dropdown_button.dart';
 export 'toolbar/quill_icon_button.dart';
+export 'toolbar/quill_text_button.dart';
 export 'toolbar/select_alignment_button.dart';
 export 'toolbar/select_header_style_button.dart';
 export 'toolbar/toggle_check_list_button.dart';

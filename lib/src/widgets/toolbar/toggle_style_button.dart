@@ -13,6 +13,7 @@ typedef ToggleStyleButtonBuilder = Widget Function(
   Color? fillColor,
   bool? isToggled,
   VoidCallback? onPressed, [
+  Widget? title,
   double iconSize,
   QuillIconTheme? iconTheme,
 ]);
@@ -26,6 +27,7 @@ class ToggleStyleButton extends StatefulWidget {
     this.fillColor,
     this.childBuilder = defaultToggleStyleButtonBuilder,
     this.iconTheme,
+    this.title,
     Key? key,
   }) : super(key: key);
 
@@ -35,6 +37,7 @@ class ToggleStyleButton extends StatefulWidget {
   final double iconSize;
 
   final Color? fillColor;
+  final Widget? title;
 
   final QuillController controller;
 
@@ -68,6 +71,7 @@ class _ToggleStyleButtonState extends State<ToggleStyleButton> {
       widget.fillColor,
       _isToggled,
       _toggleAttribute,
+      widget.title,
       widget.iconSize,
       widget.iconTheme,
     );
@@ -118,6 +122,7 @@ Widget defaultToggleStyleButtonBuilder(
   Color? fillColor,
   bool? isToggled,
   VoidCallback? onPressed, [
+  Widget? title,
   double iconSize = kDefaultIconSize,
   QuillIconTheme? iconTheme,
 ]) {
@@ -138,12 +143,21 @@ Widget defaultToggleStyleButtonBuilder(
               theme.canvasColor) //Unselected icon fill color :
       : (iconTheme?.disabledIconFillColor ??
           (fillColor ?? theme.canvasColor)); //Disabled icon fill color
-  return QuillIconButton(
-    highlightElevation: 0,
-    hoverElevation: 0,
-    size: iconSize * kIconButtonFactor,
-    icon: Icon(icon, size: iconSize, color: iconColor),
-    fillColor: fill,
-    onPressed: onPressed,
-  );
+  return title == null
+      ? QuillIconButton(
+          highlightElevation: 0,
+          hoverElevation: 0,
+          size: iconSize * kIconButtonFactor,
+          icon: Icon(icon, size: iconSize, color: iconColor),
+          fillColor: fill,
+          onPressed: onPressed,
+        )
+      : QuillTextButton(
+          highlightElevation: 0,
+          hoverElevation: 0,
+          size: iconSize * kIconButtonFactor,
+          title: title,
+          fillColor: fill,
+          onPressed: onPressed,
+        );
 }

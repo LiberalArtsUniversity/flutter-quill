@@ -450,8 +450,9 @@ class RawEditorState extends EditorState
             styles: _styles,
             enableInteractiveSelection: widget.enableInteractiveSelection,
             hasFocus: _hasFocus,
-            contentPadding: attrs.containsKey(Attribute.codeBlock.key)
-                ? const EdgeInsets.all(16)
+            contentPadding: (attrs.containsKey(Attribute.codeBlock.key) ||
+                    attrs.containsKey(Attribute.lcInfo.key))
+                ? const EdgeInsets.all(8)
                 : null,
             embedBuilder: widget.embedBuilder,
             linkActionPicker: _linkActionPicker,

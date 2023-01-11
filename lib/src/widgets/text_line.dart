@@ -246,6 +246,8 @@ class _TextLineState extends State<TextLine> {
       toMerge = defaultStyles.code!.style;
     } else if (block == Attribute.list) {
       toMerge = defaultStyles.lists!.style;
+    } else if (block == Attribute.lcInfo) {
+      toMerge = defaultStyles.lcInfo!.style;
     }
 
     textStyle = textStyle.merge(toMerge);

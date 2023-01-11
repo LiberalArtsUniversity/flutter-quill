@@ -151,6 +151,7 @@ class DefaultStyles {
     this.placeHolder,
     this.lists,
     this.quote,
+    this.lcInfo,
     this.code,
     this.indent,
     this.align,
@@ -180,6 +181,7 @@ class DefaultStyles {
   final DefaultTextBlockStyle? placeHolder;
   final DefaultListBlockStyle? lists;
   final DefaultTextBlockStyle? quote;
+  final DefaultTextBlockStyle? lcInfo;
   final DefaultTextBlockStyle? code;
   final DefaultTextBlockStyle? indent;
   final DefaultTextBlockStyle? align;
@@ -282,6 +284,13 @@ class DefaultStyles {
                 left: BorderSide(width: 4, color: Colors.grey.shade300),
               ),
             )),
+        lcInfo: DefaultTextBlockStyle(
+            defaultTextStyle.style,
+            const Tuple2(6, 6),
+            const Tuple2(0, 0),
+            BoxDecoration(
+              border: Border.all(color: Colors.grey, width: 0.5),
+            )),
         code: DefaultTextBlockStyle(
             TextStyle(
               color: Colors.blue.shade900.withOpacity(0.9),
@@ -323,6 +332,7 @@ class DefaultStyles {
         placeHolder: other.placeHolder ?? placeHolder,
         lists: other.lists ?? lists,
         quote: other.quote ?? quote,
+        lcInfo: other.lcInfo ?? lcInfo,
         code: other.code ?? code,
         indent: other.indent ?? indent,
         align: other.align ?? align,

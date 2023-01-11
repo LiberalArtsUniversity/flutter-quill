@@ -6,6 +6,7 @@ import 'node.dart';
 /// Represents a group of adjacent [Line]s with the same block style.
 ///
 /// Block elements are:
+/// - LcInfo
 /// - Blockquote
 /// - Header
 /// - Indent

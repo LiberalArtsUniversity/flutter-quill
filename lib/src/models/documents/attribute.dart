@@ -35,6 +35,7 @@ class Attribute<T> {
     Attribute.list.key: Attribute.list,
     Attribute.codeBlock.key: Attribute.codeBlock,
     Attribute.blockQuote.key: Attribute.blockQuote,
+    Attribute.lcInfo.key: Attribute.lcInfo,
     Attribute.indent.key: Attribute.indent,
     Attribute.width.key: Attribute.width,
     Attribute.height.key: Attribute.height,
@@ -79,6 +80,8 @@ class Attribute<T> {
 
   static final BlockQuoteAttribute blockQuote = BlockQuoteAttribute();
 
+  static final LcInfoAttribute lcInfo = LcInfoAttribute();
+
   static final WidthAttribute width = WidthAttribute(null);
 
   static final HeightAttribute height = HeightAttribute(null);
@@ -115,6 +118,7 @@ class Attribute<T> {
     Attribute.list.key,
     Attribute.codeBlock.key,
     Attribute.blockQuote.key,
+    Attribute.lcInfo.key,
     Attribute.indent.key,
   });
 
@@ -123,6 +127,7 @@ class Attribute<T> {
     Attribute.align.key,
     Attribute.codeBlock.key,
     Attribute.blockQuote.key,
+    Attribute.lcInfo.key,
     Attribute.indent.key,
   });
 
@@ -131,6 +136,7 @@ class Attribute<T> {
     Attribute.list.key,
     Attribute.codeBlock.key,
     Attribute.blockQuote.key,
+    Attribute.lcInfo.key,
   });
 
   static Attribute<int?> get h1 => HeaderAttribute(level: 1);
@@ -307,6 +313,10 @@ class CodeBlockAttribute extends Attribute<bool> {
 
 class BlockQuoteAttribute extends Attribute<bool> {
   BlockQuoteAttribute() : super('blockquote', AttributeScope.BLOCK, true);
+}
+
+class LcInfoAttribute extends Attribute<bool> {
+  LcInfoAttribute() : super('lc-info', AttributeScope.BLOCK, true);
 }
 
 class WidthAttribute extends Attribute<String?> {
