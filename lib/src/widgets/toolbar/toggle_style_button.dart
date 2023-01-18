@@ -13,7 +13,7 @@ typedef ToggleStyleButtonBuilder = Widget Function(
   Color? fillColor,
   bool? isToggled,
   VoidCallback? onPressed, [
-  Widget? title,
+  String? title,
   double iconSize,
   QuillIconTheme? iconTheme,
 ]);
@@ -37,7 +37,7 @@ class ToggleStyleButton extends StatefulWidget {
   final double iconSize;
 
   final Color? fillColor;
-  final Widget? title;
+  final String? title;
 
   final QuillController controller;
 
@@ -122,7 +122,7 @@ Widget defaultToggleStyleButtonBuilder(
   Color? fillColor,
   bool? isToggled,
   VoidCallback? onPressed, [
-  Widget? title,
+  String? title,
   double iconSize = kDefaultIconSize,
   QuillIconTheme? iconTheme,
 ]) {
@@ -150,13 +150,21 @@ Widget defaultToggleStyleButtonBuilder(
           size: iconSize * kIconButtonFactor,
           icon: Icon(icon, size: iconSize, color: iconColor),
           fillColor: fill,
+          borderColor:
+              isToggled == true ? iconColor ?? Colors.grey : Colors.grey,
+          borderWidth: isToggled == true ? 1 : 0.5,
           onPressed: onPressed,
         )
       : QuillTextButton(
           highlightElevation: 0,
           hoverElevation: 0,
           size: iconSize * kIconButtonFactor,
-          title: title,
+          title: Text(title,
+              style: TextStyle(
+                  color: iconColor, fontSize: 12, fontWeight: FontWeight.w700)),
+          borderColor:
+              isToggled == true ? iconColor ?? Colors.grey : Colors.grey,
+          borderWidth: isToggled == true ? 1 : 0.5,
           fillColor: fill,
           onPressed: onPressed,
         );

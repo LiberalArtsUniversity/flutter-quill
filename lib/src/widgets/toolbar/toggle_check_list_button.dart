@@ -23,7 +23,7 @@ class ToggleCheckListButton extends StatefulWidget {
   final double iconSize;
 
   final Color? fillColor;
-  final Widget? title;
+  final String? title;
 
   final QuillController controller;
 
