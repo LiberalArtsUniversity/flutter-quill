@@ -203,9 +203,7 @@ class AutoExitBlockRule extends InsertRule {
         attributes.keys.firstWhere(Attribute.blockKeysExceptHeader.contains);
     attributes[k] = null;
     // retain(1) should be '\n', set it with no attribute
-    return Delta()
-      ..retain(index + (len ?? 0))
-      ..retain(1, attributes);
+    return Delta()..retain(index + (len ?? 0))..retain(1, attributes);
   }
 }
 
@@ -331,7 +329,7 @@ class AutoFormatMultipleLinksRule extends InsertRule {
   // https://example.net/
   // URL generator tool (https://www.randomlists.com/urls) is used.
   static const _linkPattern =
-      r'(https?:\/\/|www\.)[\w-\.]+\.[\w-\.]+(\/([\S]+)?)?';
+      r'(https?:\/\/|www\.)[\S]+\.[\w-\.]+(\/([\S]+)?)?';
   static final linkRegExp = RegExp(_linkPattern);
 
   @override
