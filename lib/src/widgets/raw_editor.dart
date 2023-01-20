@@ -1010,6 +1010,36 @@ class RawEditorState extends EditorState
           .replaceAll('\n\n', '\n')
           .replaceAll('\n\n', '\n');
       var json = jsonDecode(data.text!);
+      print(json is List);
+      if (json is List) {
+        json.forEach((item) {
+          if (item['insert'] is Map) {
+            final index = textEditingValue.selection.baseOffset;
+            final length = textEditingValue.selection.extentOffset - index;
+            final embedType = item['insert'].keys.toList()[0];
+            final embed = Embeddable(embedType, item['insert'][embedType]);
+
+            final result =
+                widget.controller.replaceText(index, length, embed, null);
+            item['attributes'].forEach((key, value) {
+              widget.controller.formatText(
+                  getImageNode(widget.controller, index + 1).item1,
+                  1,
+                  Attribute(
+                    key,
+                    AttributeScope.INLINE,
+                    value,
+                  ));
+            });
+          } else {
+            textValue = item['insert'];
+            _replaceText(ReplaceTextIntent(
+                textEditingValue, textValue, selection, cause));
+          }
+        });
+        return;
+      }
+
       if (json is Map) {
         if (json['insert'] is Map) {
           final index = textEditingValue.selection.baseOffset;
