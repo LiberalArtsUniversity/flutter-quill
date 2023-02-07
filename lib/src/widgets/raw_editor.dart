@@ -1004,13 +1004,16 @@ class RawEditorState extends EditorState
     if (clipboardText == null) {
       return;
     }
-    final data = clipboardText.text as String;
+    var data = clipboardText.text as String;
     final reg = RegExp(r'<.*?>', multiLine: true);
     if (reg.hasMatch(data)) {
-      data
-          .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '\n')
-          .replaceAll('\n\n', '\n')
-          .replaceAll('\n\n', '\n');
+      final htmlMatchPattern3 = RegExp(r'Re<span class="badge">返信元<\/span>');
+      final htmlMatchPattern = RegExp(r'data-content="[^"]+"');
+      data = data
+          .replaceAll(htmlMatchPattern, '')
+          .replaceAll(htmlMatchPattern3, '[Re]')
+          .replaceAll(RegExp(r'<p>|</p>'), '\n')
+          .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '');
     }
 
     var textValue = data;
