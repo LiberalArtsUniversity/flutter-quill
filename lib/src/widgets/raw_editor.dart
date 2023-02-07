@@ -789,7 +789,7 @@ class RawEditorState extends EditorState
   bool _showCaretOnScreenScheduled = false;
 
   // This is a workaround for checkbox tapping issue
-  // https://github.com/singerdmx/flutter-quill/issues/619
+  // https:/urlithub.com/singerdmx/flutter-quill/issues/619
   // We cannot treat {"list": "checked"} and {"list": "unchecked"} as
   // block of the same style
   // This causes controller.selection to go to offset 0
@@ -1013,7 +1013,12 @@ class RawEditorState extends EditorState
           .replaceAll(htmlMatchPattern, '')
           .replaceAll(htmlMatchPattern3, '[Re]')
           .replaceAll(RegExp(r'<p>|</p>'), '\n')
-          .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '');
+          .replaceAllMapped(RegExp(r'\<a href\="([\S]+)"\>([\S]+)</a>'),
+              (match) {
+        final url = match.group(1) ?? '';
+        final text = match.group(2) ?? '';
+        return url == text ? text : '$text $url';
+      }).replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '');
     }
 
     var textValue = data;
