@@ -952,6 +952,7 @@ class RawEditorState extends EditorState
 
     final offset = selection.start;
     var node = controller.queryNode(offset);
+    print(selection.textInside(text));
 
     if (node != null && selection.textInside(text) == '￼') {
       Clipboard.setData(
@@ -998,19 +999,24 @@ class RawEditorState extends EditorState
     // Snapshot the input before using `await`.
     // See https://github.com/flutter/flutter/issues/11427
 
-    final data = await Clipboard.getData(Clipboard.kTextPlain);
-    if (data == null) {
+    final clipboardText = await Clipboard.getData(Clipboard.kTextPlain);
+
+    if (clipboardText == null) {
       return;
     }
-    var textValue = '';
-    try {
-      textValue = data.text!;
-      textValue = textValue
+    final data = clipboardText.text as String;
+    final reg = RegExp(r'<.*?>', multiLine: true);
+    if (reg.hasMatch(data)) {
+      data
           .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '\n')
           .replaceAll('\n\n', '\n')
           .replaceAll('\n\n', '\n');
-      var json = jsonDecode(data.text!);
-      print(json is List);
+    }
+
+    var textValue = data;
+    try {
+      final json = jsonDecode(data);
+
       if (json is List) {
         json.forEach((item) {
           if (item['insert'] is Map) {
@@ -1019,8 +1025,7 @@ class RawEditorState extends EditorState
             final embedType = item['insert'].keys.toList()[0];
             final embed = Embeddable(embedType, item['insert'][embedType]);
 
-            final result =
-                widget.controller.replaceText(index, length, embed, null);
+            widget.controller.replaceText(index, length, embed, null);
             item['attributes'].forEach((key, value) {
               widget.controller.formatText(
                   getImageNode(widget.controller, index + 1).item1,
@@ -1047,8 +1052,7 @@ class RawEditorState extends EditorState
           final embedType = json['insert'].keys.toList()[0];
           final embed = Embeddable(embedType, json['insert'][embedType]);
 
-          final result =
-              widget.controller.replaceText(index, length, embed, null);
+          widget.controller.replaceText(index, length, embed, null);
           json['attributes'].forEach((key, value) {
             widget.controller.formatText(
                 getImageNode(widget.controller, index + 1).item1,
@@ -1064,7 +1068,9 @@ class RawEditorState extends EditorState
           textValue = json['insert'];
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      // debugPrint(e.toString());
+    }
 
     _replaceText(
         ReplaceTextIntent(textEditingValue, textValue, selection, cause));
