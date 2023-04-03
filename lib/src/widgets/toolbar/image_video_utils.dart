@@ -125,6 +125,8 @@ class ImageVideoUtils {
     final length = controller.selection.extentOffset - index;
 
     String? imageUrl;
+
+    showProgressDialog(context);
     if (kIsWeb) {
       assert(
           webImagePickImpl != null,
@@ -138,6 +140,7 @@ class ImageVideoUtils {
       imageUrl =
           await _pickImageDesktop(context, filePickImpl!, onImagePickCallback);
     }
+    Navigator.of(context).pop();
 
     if (imageUrl != null) {
       controller.replaceText(index, length, BlockEmbed.image(imageUrl), null);
@@ -177,6 +180,7 @@ class ImageVideoUtils {
     final length = controller.selection.extentOffset - index;
 
     String? videoUrl;
+    showProgressDialog(context);
     if (kIsWeb) {
       assert(
           webVideoPickImpl != null,
@@ -191,6 +195,7 @@ class ImageVideoUtils {
           await _pickVideoDesktop(context, filePickImpl!, onVideoPickCallback);
     }
 
+    Navigator.of(context).pop();
     if (videoUrl != null) {
       controller.replaceText(index, length, BlockEmbed.video(videoUrl), null);
     }
@@ -215,5 +220,19 @@ class ImageVideoUtils {
 
     final file = File(filePath);
     return onVideoPickCallback(file);
+  }
+
+  static showProgressDialog(BuildContext context) {
+    showGeneralDialog(
+        context: context,
+        barrierDismissible: false,
+        transitionDuration: const Duration(milliseconds: 300),
+        barrierColor: Colors.black.withOpacity(0.5),
+        pageBuilder: (BuildContext context, Animation animation,
+            Animation secondaryAnimation) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
   }
 }
