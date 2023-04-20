@@ -904,12 +904,8 @@ class RawEditorState extends EditorState
 
     final offset = selection.start;
     var node = controller.queryNode(offset);
-    print(selection.textInside(text) == '￼');
-    print(selection.textInside(text));
-    print(node != null);
 
     if (node != null && selection.textInside(text) == '￼') {
-      print(node.toDelta().toJson());
       Clipboard.setData(
           ClipboardData(text: jsonEncode(node.toDelta().toJson()[0])));
     } else {
@@ -952,7 +948,6 @@ class RawEditorState extends EditorState
 
     final offset = selection.start;
     var node = controller.queryNode(offset);
-    print(selection.textInside(text));
 
     if (node != null && selection.textInside(text) == '￼') {
       Clipboard.setData(
