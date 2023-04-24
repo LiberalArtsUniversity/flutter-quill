@@ -893,8 +893,6 @@ class RawEditorState extends EditorState
   @override
   void copySelection(SelectionChangedCause cause) {
     widget.controller.copiedImageUrl = null;
-    _pastePlainText = widget.controller.getPlainText();
-    _pasteStyle = widget.controller.getAllIndividualSelectionStyles();
 
     final selection = textEditingValue.selection;
     final text = textEditingValue.text;
@@ -934,9 +932,6 @@ class RawEditorState extends EditorState
   @override
   void cutSelection(SelectionChangedCause cause) {
     widget.controller.copiedImageUrl = null;
-    _pastePlainText = widget.controller.getPlainText();
-    _pasteStyle = widget.controller.getAllIndividualSelectionStyles();
-
     if (widget.readOnly) {
       return;
     }
