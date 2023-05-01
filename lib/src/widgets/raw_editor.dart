@@ -1006,7 +1006,8 @@ class RawEditorState extends EditorState
           .replaceAllMapped(RegExp(r'\<a href\="([\S]+)"\>([\S]+)</a>'),
               (match) {
         final url = match.group(1) ?? '';
-        final text = match.group(2) ?? '';
+        final text =
+            Uri.decodeComponent(match.group(2) ?? '').replaceAll('&amp;', '&');
         return url == text ? text : '$text $url';
       }).replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '');
     }
