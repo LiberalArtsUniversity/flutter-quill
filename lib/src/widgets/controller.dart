@@ -149,7 +149,7 @@ class QuillController extends ChangeNotifier {
 
   void replaceText(
       int index, int len, Object? data, TextSelection? textSelection,
-      {bool ignoreFocus = false}) {
+      {bool ignoreFocus = false, Map<String, Attribute<dynamic>>? attributes}) {
     assert(data is String || data is Embeddable);
 
     if (onReplaceText != null && !onReplaceText!(index, len, data)) {
@@ -159,6 +159,11 @@ class QuillController extends ChangeNotifier {
     Delta? delta;
     if (len > 0 || data is! String || data.isNotEmpty) {
       delta = document.replace(index, len, data);
+      if (attributes != null) {
+        attributes.forEach((key, attr) {
+          document.format(index, data is String ? data.length : 1, attr);
+        });
+      }
       var shouldRetainDelta = toggledStyle.isNotEmpty &&
           delta.isNotEmpty &&
           delta.length <= 2 &&
@@ -174,6 +179,7 @@ class QuillController extends ChangeNotifier {
           shouldRetainDelta = false;
         }
       }
+
       if (shouldRetainDelta) {
         final retainDelta = Delta()
           ..retain(index)

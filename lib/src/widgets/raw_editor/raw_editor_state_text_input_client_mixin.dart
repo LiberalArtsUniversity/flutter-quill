@@ -123,6 +123,7 @@ mixin RawEditorStateTextInputClientMixin on EditorState
 
   @override
   void updateEditingValue(TextEditingValue value) {
+    print('RawEditorStateTextInputClientMixin updateEditingValue');
     if (!shouldCreateInputConnection) {
       return;
     }
@@ -153,8 +154,14 @@ mixin RawEditorStateTextInputClientMixin on EditorState
     if (diff.deleted.isEmpty && diff.inserted.isEmpty) {
       widget.controller.updateSelection(value.selection, ChangeSource.LOCAL);
     } else {
+      final style = widget.controller.document.collectStyle(
+          _lastKnownRemoteTextEditingValue!.selection.start,
+          _lastKnownRemoteTextEditingValue!.selection.end -
+              _lastKnownRemoteTextEditingValue!.selection.start);
+
       widget.controller.replaceText(
-          diff.start, diff.deleted.length, diff.inserted, value.selection);
+          diff.start, diff.deleted.length, diff.inserted, value.selection,
+          attributes: style.attributes);
     }
   }
 
