@@ -123,7 +123,6 @@ mixin RawEditorStateTextInputClientMixin on EditorState
 
   @override
   void updateEditingValue(TextEditingValue value) {
-    print('RawEditorStateTextInputClientMixin updateEditingValue');
     if (!shouldCreateInputConnection) {
       return;
     }
@@ -151,17 +150,24 @@ mixin RawEditorStateTextInputClientMixin on EditorState
     final text = value.text;
     final cursorPosition = value.selection.extentOffset;
     final diff = getDiff(oldText, text, cursorPosition);
-    if (diff.deleted.isEmpty && diff.inserted.isEmpty) {
+    if (diff.deleted.isEmpty &&
+        diff.inserted.isEmpty &&
+        _lastKnownRemoteTextEditingValue == null) {
       widget.controller.updateSelection(value.selection, ChangeSource.LOCAL);
     } else {
-      final style = widget.controller.document.collectStyle(
-          _lastKnownRemoteTextEditingValue!.selection.start,
-          _lastKnownRemoteTextEditingValue!.selection.end -
-              _lastKnownRemoteTextEditingValue!.selection.start);
+      try {
+        final style = widget.controller.document.collectStyle(
+            _lastKnownRemoteTextEditingValue!.selection.start,
+            _lastKnownRemoteTextEditingValue!.selection.end -
+                _lastKnownRemoteTextEditingValue!.selection.start);
 
-      widget.controller.replaceText(
-          diff.start, diff.deleted.length, diff.inserted, value.selection,
-          attributes: style.attributes);
+        widget.controller.replaceText(
+            diff.start, diff.deleted.length, diff.inserted, value.selection,
+            attributes: style.attributes);
+      } catch (e) {
+        widget.controller.replaceText(
+            diff.start, diff.deleted.length, diff.inserted, value.selection);
+      }
     }
   }
 
