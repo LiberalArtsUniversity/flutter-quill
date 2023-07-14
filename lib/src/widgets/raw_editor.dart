@@ -20,6 +20,7 @@ import '../models/documents/nodes/line.dart';
 import '../models/documents/nodes/node.dart';
 import '../models/documents/style.dart';
 import '../utils/platform.dart';
+import '../models/quill_delta.dart';
 import 'controller.dart';
 import 'cursor.dart';
 import 'default_styles.dart';
@@ -1017,30 +1018,16 @@ class RawEditorState extends EditorState
       final json = jsonDecode(data);
 
       if (json is List) {
-        json.forEach((item) {
-          if (item['insert'] is Map) {
-            final index = textEditingValue.selection.baseOffset;
-            final length = textEditingValue.selection.extentOffset - index;
-            final embedType = item['insert'].keys.toList()[0];
-            final embed = Embeddable(embedType, item['insert'][embedType]);
+        final selection = widget.controller.selection;
+        final jsonDataDelta = Delta.fromJson(json);
+        final delta = Delta()
+          ..retain(selection.start)
+          ..insert("\n");
 
-            widget.controller.replaceText(index, length, embed, null);
-            item['attributes'].forEach((key, value) {
-              widget.controller.formatText(
-                  getImageNode(widget.controller, index + 1).item1,
-                  1,
-                  Attribute(
-                    key,
-                    AttributeScope.INLINE,
-                    value,
-                  ));
-            });
-          } else {
-            textValue = item['insert'];
-            _replaceText(ReplaceTextIntent(
-                textEditingValue, textValue, selection, cause));
-          }
-        });
+        final composedDelta = delta.concat(jsonDataDelta);
+        final position = composedDelta.transformPosition(selection.start);
+        widget.controller.document.compose(composedDelta, ChangeSource.LOCAL);
+        widget.controller.moveCursorToPosition(position);
         return;
       }
 
@@ -1068,7 +1055,7 @@ class RawEditorState extends EditorState
         }
       }
     } catch (e) {
-      // debugPrint(e.toString());
+      debugPrint(e.toString());
     }
 
     _replaceText(
@@ -1668,6 +1655,7 @@ class _UpdateTextSelectionAction<T extends DirectionalCaretMovementIntent>
 
   @override
   Object? invoke(T intent, [BuildContext? context]) {
+    print('aaaaaaaaaaaaaaaaaaaaaaa');
     final selection = state.textEditingValue.selection;
     assert(selection.isValid);
 
