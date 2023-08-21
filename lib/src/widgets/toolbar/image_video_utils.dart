@@ -144,8 +144,8 @@ class ImageVideoUtils {
 
     if (imageUrl != null) {
       controller.replaceText(index, length, BlockEmbed.image(imageUrl), null);
-      controller.replaceText(index + 1, 1, '\n', null);
-      controller.moveCursorToPosition(controller.selection.baseOffset + 2);
+      controller.replaceText(index + length + 1, 0, '\n\n',
+          TextSelection.collapsed(offset: index + length + 2));
     }
   }
 
