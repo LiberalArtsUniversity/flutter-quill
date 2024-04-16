@@ -18,7 +18,7 @@ class SelectImageSourceDialog extends StatelessWidget {
             ListTile(
               title: Text(context.loc.gallery),
               subtitle: Text(
-                context.loc.pickAPhotoFromYourGallery,
+                'アルバムからアップロード',
               ),
               leading: const Icon(Icons.photo_sharp),
               onTap: () => Navigator.of(context).pop(InsertImageSource.gallery),
@@ -26,7 +26,7 @@ class SelectImageSourceDialog extends StatelessWidget {
             ListTile(
               title: Text(context.loc.camera),
               subtitle: Text(
-                context.loc.takeAPhotoUsingYourCamera,
+                '撮影する',
               ),
               leading: const Icon(Icons.camera),
               enabled: !isDesktop(supportWeb: false),
@@ -35,11 +35,14 @@ class SelectImageSourceDialog extends StatelessWidget {
             ListTile(
               title: Text(context.loc.link),
               subtitle: Text(
-                context.loc.pasteAPhotoUsingALink,
+               '画像リンクからアップロードする',
               ),
               leading: const Icon(Icons.link),
               onTap: () => Navigator.of(context).pop(InsertImageSource.link),
             ),
+            const SizedBox(
+                                height: 20,
+                                )
           ],
         ),
       ),
