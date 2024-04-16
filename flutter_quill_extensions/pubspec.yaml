@@ -36,7 +36,10 @@ dependencies:
   cross_file: ^0.3.3+6
 
   flutter_quill:
-    path: ../
+    # path: ../  #local開発時に使用
+    git:
+      ref: lc-master
+      url: https://github.com/LiberalArtsUniversity/flutter-quill
   photo_view: ^0.14.0
 
   # Plugins
