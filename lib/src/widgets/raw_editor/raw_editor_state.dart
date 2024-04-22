@@ -22,6 +22,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart'
 import 'package:html/parser.dart' as html_parser;
 import 'package:super_clipboard/super_clipboard.dart';
 
+import '../../../quill_delta.dart';
 import '../../models/documents/attribute.dart';
 import '../../models/documents/delta_x.dart';
 import '../../models/documents/document.dart';
@@ -211,7 +212,6 @@ class QuillRawEditorState extends EditorState
     }
 
     final clipboard = SystemClipboard.instance;
-
     if (clipboard != null) {
       final reader = await clipboard.read();
       if (reader.canProvide(Formats.htmlText)) {
@@ -249,7 +249,28 @@ class QuillRawEditorState extends EditorState
     // Snapshot the input before using `await`.
     // See https://github.com/flutter/flutter/issues/11427
     final plainText = await Clipboard.getData(Clipboard.kTextPlain);
+
+    bool isJsonFormat(String str) {
+      try {
+        jsonDecode(str); // JSONとして解析を試みる
+        return true; // 解析に成功した場合、trueを返す
+      } catch (e) {
+        return false; // 解析に失敗した場合、falseを返す
+      }
+    }
+
     if (plainText != null) {
+      if (isJsonFormat(plainText.text!)) {
+        final deltaFromClipboard = Delta.fromJson(jsonDecode(plainText.text!));
+        controller.replaceText(
+          textEditingValue.selection.start,
+          textEditingValue.selection.end - textEditingValue.selection.start,
+          deltaFromClipboard,
+          TextSelection.collapsed(offset: textEditingValue.selection.end),
+        );
+
+        return;
+      }
       _replaceText(
         ReplaceTextIntent(
           textEditingValue,
