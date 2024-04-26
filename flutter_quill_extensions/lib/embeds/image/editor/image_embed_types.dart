@@ -53,12 +53,15 @@ class QuillToolbarImageConfigurations {
   const QuillToolbarImageConfigurations({
     this.onRequestPickImage,
     this.onImageInsertedCallback,
+    this.onErrorCall,
     OnImageInsertCallback? onImageInsertCallback,
   }) : _onImageInsertCallback = onImageInsertCallback;
 
   final OnRequestPickImage? onRequestPickImage;
 
   final OnImageInsertedCallback? onImageInsertedCallback;
+
+  final Function(InsertImageSource source)? onErrorCall;
 
   final OnImageInsertCallback? _onImageInsertCallback;
 

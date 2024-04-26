@@ -134,7 +134,7 @@ class QuillToolbarImageButton extends StatelessWidget {
       return;
     }
 
-    final imageUrl = switch (source) {
+    try {    final imageUrl = switch (source) {
       InsertImageSource.gallery => (await imagePickerService.pickImage(
           source: ImageSource.gallery,
         ))
@@ -153,6 +153,9 @@ class QuillToolbarImageButton extends StatelessWidget {
           .onImageInsertCallback(imageUrl, controller);
       await options.imageButtonConfigurations.onImageInsertedCallback
           ?.call(imageUrl);
+    }
+    } catch (e) {
+      options.imageButtonConfigurations.onErrorCall!(source);
     }
   }
 
