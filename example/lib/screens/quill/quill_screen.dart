@@ -4,11 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill_extensions/flutter_quill_extensions.dart'
     show FlutterQuillEmbeds, QuillSharedExtensionsConfigurations;
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
-import 'package:quill_html_converter/quill_html_converter.dart';
-import 'package:quill_pdf_converter/quill_pdf_converter.dart';
 import 'package:share_plus/share_plus.dart' show Share;
 
 import '../../extensions/scaffold_messenger.dart';
@@ -38,6 +33,7 @@ class QuillScreen extends StatefulWidget {
 }
 
 class _QuillScreenState extends State<QuillScreen> {
+  /// Instantiate the controller
   final _controller = QuillController.basic();
   final _editorFocusNode = FocusNode();
   final _editorScrollController = ScrollController();
@@ -59,54 +55,11 @@ class _QuillScreenState extends State<QuillScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _controller.readOnly = _isReadOnly;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter Quill'),
         actions: [
-          MenuAnchor(
-            builder: (context, controller, child) {
-              return IconButton(
-                onPressed: () {
-                  if (controller.isOpen) {
-                    controller.close();
-                    return;
-                  }
-                  controller.open();
-                },
-                icon: const Icon(
-                  Icons.more_vert,
-                ),
-              );
-            },
-            menuChildren: [
-              MenuItemButton(
-                onPressed: () {
-                  final html = _controller.document.toDelta().toHtml();
-                  _controller.document = Document.fromHtml(html);
-                },
-                child: const Text('Load with HTML'),
-              ),
-              MenuItemButton(
-                onPressed: () async {
-                  final pdfDocument = pw.Document();
-                  final pdfWidgets =
-                      await _controller.document.toDelta().toPdf();
-                  pdfDocument.addPage(
-                    pw.MultiPage(
-                      maxPages: 200,
-                      pageFormat: PdfPageFormat.a4,
-                      build: (context) {
-                        return pdfWidgets;
-                      },
-                    ),
-                  );
-                  await Printing.layoutPdf(
-                      onLayout: (format) async => pdfDocument.save());
-                },
-                child: const Text('Print as PDF'),
-              ),
-            ],
-          ),
           IconButton(
             tooltip: 'Share',
             onPressed: () {
@@ -126,7 +79,7 @@ class _QuillScreenState extends State<QuillScreen> {
           IconButton(
             tooltip: 'Print to log',
             onPressed: () {
-              print(
+              debugPrint(
                 jsonEncode(_controller.document.toDelta().toJson()),
               );
               ScaffoldMessenger.of(context).showText(
@@ -149,10 +102,12 @@ class _QuillScreenState extends State<QuillScreen> {
             builder: (context) {
               return Expanded(
                 child: MyQuillEditor(
+                  controller: _controller,
                   configurations: QuillEditorConfigurations(
+                    searchConfigurations: const QuillSearchConfigurations(
+                      searchEmbedMode: SearchEmbedMode.plainText,
+                    ),
                     sharedConfigurations: _sharedConfigurations,
-                    controller: _controller,
-                    readOnly: _isReadOnly,
                   ),
                   scrollController: _editorScrollController,
                   focusNode: _editorFocusNode,
