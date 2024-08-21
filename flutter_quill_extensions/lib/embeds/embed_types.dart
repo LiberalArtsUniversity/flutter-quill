@@ -1,20 +1,12 @@
-import 'dart:io';
+import 'package:cross_file/cross_file.dart' show XFile;
 
-import 'package:flutter/material.dart';
+typedef MediaFileUrl = String;
+typedef MediaFilePicker = Future<XFile?> Function(QuillMediaType mediaType);
+typedef MediaPickedCallback = Future<MediaFileUrl> Function(XFile file);
 
-typedef OnImagePickCallback = Future<String?> Function(File file);
-typedef OnVideoPickCallback = Future<String?> Function(File file);
-typedef FilePickImpl = Future<String?> Function(BuildContext context);
-typedef WebImagePickImpl = Future<String?> Function(
-    OnImagePickCallback onImagePickCallback);
-typedef WebVideoPickImpl = Future<String?> Function(
-    OnVideoPickCallback onImagePickCallback);
-typedef MediaPickSettingSelector = Future<MediaPickSetting?> Function(
-    BuildContext context);
+enum QuillMediaType { image, video }
 
-enum MediaPickSetting {
-  Gallery,
-  Link,
-  Camera,
-  Video,
+extension QuillMediaTypeX on QuillMediaType {
+  bool get isImage => this == QuillMediaType.image;
+  bool get isVideo => this == QuillMediaType.video;
 }
