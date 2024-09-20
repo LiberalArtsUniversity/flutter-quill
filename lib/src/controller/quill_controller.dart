@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/services.dart' show ClipboardData, Clipboard;
@@ -545,6 +546,7 @@ class QuillController extends ChangeNotifier {
   /// Returns whether paste operation was handled here.
   /// updateEditor is called if paste operation was successful.
   Future<bool> clipboardPaste({void Function()? updateEditor}) async {
+    print("call clipboardPaste");
     if (readOnly || !selection.isValid) return true;
 
     final pasteUsingInternalImageSuccess = await _pasteInternalImage();
@@ -554,12 +556,14 @@ class QuillController extends ChangeNotifier {
     }
 
     final pasteUsingHtmlSuccess = await _pasteHTML();
+    print("pasteUsingHtmlSuccess：$pasteUsingHtmlSuccess");
     if (pasteUsingHtmlSuccess) {
       updateEditor?.call();
       return true;
     }
 
     final pasteUsingMarkdownSuccess = await _pasteMarkdown();
+    print("pasteUsingMarkdownSuccess：$pasteUsingMarkdownSuccess");
     if (pasteUsingMarkdownSuccess) {
       updateEditor?.call();
       return true;
@@ -569,6 +573,7 @@ class QuillController extends ChangeNotifier {
     // See https://github.com/flutter/flutter/issues/11427
     final plainTextClipboardData =
         await Clipboard.getData(Clipboard.kTextPlain);
+    print("plainTextClipboardData：${plainTextClipboardData?.text}");
     if (pasteUsingPlainOrDelta(plainTextClipboardData?.text)) {
       updateEditor?.call();
       return true;
@@ -582,9 +587,23 @@ class QuillController extends ChangeNotifier {
     return false;
   }
 
+// 重要
   /// Internal method to allow unit testing
   bool pasteUsingPlainOrDelta(String? clipboardText) {
     if (clipboardText != null) {
+      try {
+        // クリップボードのテキストをDelta形式のJSONとして解析しようと試みる
+        final deltaData = Delta.fromJson(jsonDecode(clipboardText));
+
+        // Delta形式として解釈できた場合、それを挿入
+        replaceText(selection.start, selection.end - selection.start, deltaData,
+            TextSelection.collapsed(offset: selection.end));
+
+        return true;
+      } catch (_) {
+        debugPrint('Delta形式以外のPaste');
+      }
+
       /// Internal copy-paste preserves styles and embeds
       if (clipboardText == _pastePlainText &&
           _pastePlainText.isNotEmpty &&
