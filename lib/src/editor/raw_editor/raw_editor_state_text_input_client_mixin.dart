@@ -2,7 +2,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/animation.dart' show Curves;
 import 'package:flutter/cupertino.dart' show CupertinoTheme;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show ValueNotifier, kIsWeb;
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:flutter/services.dart';
@@ -15,7 +15,22 @@ import 'raw_editor.dart';
 mixin RawEditorStateTextInputClientMixin on EditorState
     implements TextInputClient {
   TextInputConnection? _textInputConnection;
-  TextEditingValue? _lastKnownRemoteTextEditingValue;
+  TextEditingValue? __lastKnownRemoteTextEditingValue;
+
+  set _lastKnownRemoteTextEditingValue(TextEditingValue? value) {
+    __lastKnownRemoteTextEditingValue = value;
+    if (composingRange.value != value?.composing) {
+      composingRange.value = value?.composing ?? TextRange.empty;
+    }
+  }
+
+  TextEditingValue? get _lastKnownRemoteTextEditingValue =>
+      __lastKnownRemoteTextEditingValue;
+
+  /// The range of text that is currently being composed.
+  final ValueNotifier<TextRange> composingRange = ValueNotifier<TextRange>(
+    TextRange.empty,
+  );
 
   /// Whether to create an input connection with the platform for text editing
   /// or not.
@@ -79,6 +94,19 @@ mixin RawEditorStateTextInputClientMixin on EditorState
       _updateComposingRectIfNeeded();
       //update IME position for Macos
       _updateCaretRectIfNeeded();
+
+      /// Trap selection extends off end of document
+      if (_lastKnownRemoteTextEditingValue != null) {
+        if (_lastKnownRemoteTextEditingValue!.selection.end >
+            _lastKnownRemoteTextEditingValue!.text.length) {
+          _lastKnownRemoteTextEditingValue = _lastKnownRemoteTextEditingValue!
+              .copyWith(
+                  selection: _lastKnownRemoteTextEditingValue!.selection
+                      .copyWith(
+                          extentOffset:
+                              _lastKnownRemoteTextEditingValue!.text.length));
+        }
+      }
       _textInputConnection!.setEditingState(_lastKnownRemoteTextEditingValue!);
     }
     _textInputConnection!.show();
