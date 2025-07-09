@@ -565,7 +565,6 @@ class QuillController extends ChangeNotifier {
   /// Returns whether paste operation was handled here.
   /// updateEditor is called if paste operation was successful.
   Future<bool> clipboardPaste({void Function()? updateEditor}) async {
-    print("call clipboardPaste");
     if (readOnly || !selection.isValid) return true;
 
     final pasteUsingInternalImageSuccess = await _pasteInternalImage();
@@ -590,7 +589,6 @@ class QuillController extends ChangeNotifier {
     // See https://github.com/flutter/flutter/issues/11427
     final plainTextClipboardData =
         await Clipboard.getData(Clipboard.kTextPlain);
-    print("plainTextClipboardData：${plainTextClipboardData?.text}");
     if (pasteUsingPlainOrDelta(plainTextClipboardData?.text)) {
       updateEditor?.call();
       return true;
@@ -611,8 +609,24 @@ class QuillController extends ChangeNotifier {
         // クリップボードのテキストをDelta形式のJSONとして解析しようと試みる
         final deltaData = Delta.fromJson(jsonDecode(clipboardText));
 
+        // colorとbackground属性を除去したDeltaを作成
+        final filteredOperations = deltaData.toList().map((op) {
+          if (op.attributes != null && op.attributes!.isNotEmpty) {
+            final filteredAttributes = Map<String, dynamic>.from(op.attributes!)
+              ..remove('color')
+              ..remove('background');
+            if (filteredAttributes.isEmpty) {
+              return Operation(op.key, op.length, op.data, null);
+            }
+            return Operation(op.key, op.length, op.data, filteredAttributes);
+          }
+          return op;
+        }).toList();
+        
+        final filteredDelta = Delta.fromOperations(filteredOperations);
+
         // Delta形式として解釈できた場合、それを挿入
-        replaceText(selection.start, selection.end - selection.start, deltaData,
+        replaceText(selection.start, selection.end - selection.start, filteredDelta,
             TextSelection.collapsed(offset: selection.end));
 
         return true;
