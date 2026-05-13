@@ -179,6 +179,25 @@ mixin RawEditorStateTextInputClientMixin on EditorState
       return;
     }
 
+    // IME composing 中に composing=(-1,-1) を Platform に送ると、iOS は
+    // 「composing が確定された」と解釈し、composing 中のテキストを新規入力
+    // として再送してしまう（iOS 日本語 IME のスペース長押し→フリックや
+    // 次候補長押しで文字が増殖する原因）。
+    // composing 中は以下の方針で送信を絞る:
+    //   - text が変わっていない & selection だけ変わっている
+    //     → composing 範囲を保ったまま selection を送る（候補表示更新のため）
+    //   - text が変わっている / それ以外
+    //     → Platform 側に駆動させ、何も送らない
+    // 参考: https://github.com/singerdmx/flutter-quill/issues/2710
+    if (composingRange.isValid && composingRange.end <= value.text.length) {
+      if (actualValue.text == _lastKnownRemoteTextEditingValue!.text &&
+          actualValue.selection != _lastKnownRemoteTextEditingValue!.selection) {
+        _lastKnownRemoteTextEditingValue = actualValue;
+        _textInputConnection!.setEditingState(actualValue);
+      }
+      return;
+    }
+
     _lastKnownRemoteTextEditingValue = actualValue;
     _textInputConnection!.setEditingState(
       // Set composing to (-1, -1), otherwise an exception will be thrown if
