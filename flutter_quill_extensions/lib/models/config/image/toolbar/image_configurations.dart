@@ -25,15 +25,8 @@ class QuillToolbarImageButtonOptions extends QuillToolbarBaseButtonOptions<
     super.afterButtonPressed,
     super.childBuilder,
     super.iconTheme,
-    this.dialogTheme,
-    this.linkRegExp,
     this.imageButtonConfigurations = const QuillToolbarImageConfigurations(),
   });
-
-  final QuillDialogTheme? dialogTheme;
-
-  /// [imageLinkRegExp] is a regular expression to identify image links.
-  final RegExp? linkRegExp;
 
   final QuillToolbarImageConfigurations imageButtonConfigurations;
 }

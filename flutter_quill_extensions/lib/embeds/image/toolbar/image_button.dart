@@ -7,7 +7,6 @@ import 'package:flutter_quill/translations.dart';
 import '../../../models/config/image/toolbar/image_configurations.dart';
 import '../../../models/config/shared_configurations.dart';
 import '../../../services/image_picker/image_picker.dart';
-import '../../others/image_video_utils.dart';
 import '../editor/image_embed_types.dart';
 import 'select_image_source.dart';
 
@@ -80,9 +79,7 @@ class QuillToolbarImageButton extends StatelessWidget {
           iconData: iconData,
           iconSize: iconSize,
           iconButtonFactor: iconButtonFactor,
-          dialogTheme: options.dialogTheme,
           iconTheme: options.iconTheme,
-          linkRegExp: options.linkRegExp,
           tooltip: options.tooltip,
           imageButtonConfigurations: options.imageButtonConfigurations,
         ),
@@ -138,7 +135,6 @@ class QuillToolbarImageButton extends StatelessWidget {
           source: ImageSource.gallery,
         ))
             ?.path,
-      InsertImageSource.link => await _typeLink(context),
       InsertImageSource.camera => (await imagePickerService.pickImage(
           source: ImageSource.camera,
         ))
@@ -154,21 +150,8 @@ class QuillToolbarImageButton extends StatelessWidget {
           ?.call(imageUrl);
     }
     } catch (e) {
-      options.imageButtonConfigurations.onErrorCall!(source);
+      options.imageButtonConfigurations.onErrorCall?.call(source);
     }
   }
 
-  Future<String?> _typeLink(BuildContext context) async {
-    final value = await showDialog<String>(
-      context: context,
-      builder: (_) => FlutterQuillLocalizationsWidget(
-        child: TypeLinkDialog(
-          dialogTheme: options.dialogTheme,
-          linkRegExp: options.linkRegExp,
-          linkType: LinkType.image,
-        ),
-      ),
-    );
-    return value;
-  }
 }
