@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/translations.dart';
 
-import '../../common/image_video_utils.dart';
 import '../../editor/image/image_embed_types.dart';
 import '../../editor_toolbar_shared/image_picker/image_picker.dart';
 import '../../editor_toolbar_shared/shared_configurations.dart';
@@ -138,7 +137,6 @@ class QuillToolbarImageButton extends StatelessWidget {
           source: ImageSource.gallery,
         ))
             ?.path,
-      InsertImageSource.link => await _typeLink(context),
       InsertImageSource.camera => (await imagePickerService.pickImage(
           source: ImageSource.camera,
         ))
@@ -158,17 +156,4 @@ class QuillToolbarImageButton extends StatelessWidget {
     }
   }
 
-  Future<String?> _typeLink(BuildContext context) async {
-    final value = await showDialog<String>(
-      context: context,
-      builder: (_) => FlutterQuillLocalizationsWidget(
-        child: TypeLinkDialog(
-          dialogTheme: options.dialogTheme,
-          linkRegExp: options.linkRegExp,
-          linkType: LinkType.image,
-        ),
-      ),
-    );
-    return value;
-  }
 }
