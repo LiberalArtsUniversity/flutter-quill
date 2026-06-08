@@ -32,14 +32,6 @@ class SelectImageSourceDialog extends StatelessWidget {
               enabled: !isDesktopApp,
               onTap: () => Navigator.of(context).pop(InsertImageSource.camera),
             ),
-            ListTile(
-              title: Text(context.loc.link),
-              subtitle: Text(
-               '画像リンクからアップロードする',
-              ),
-              leading: const Icon(Icons.link),
-              onTap: () => Navigator.of(context).pop(InsertImageSource.link),
-            ),
             const SizedBox(
                                 height: 20,
                                 )
