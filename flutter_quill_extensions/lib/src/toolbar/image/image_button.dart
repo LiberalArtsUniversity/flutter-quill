@@ -79,9 +79,7 @@ class QuillToolbarImageButton extends StatelessWidget {
           iconData: iconData,
           iconSize: iconSize,
           iconButtonFactor: iconButtonFactor,
-          dialogTheme: options.dialogTheme,
           iconTheme: options.iconTheme,
-          linkRegExp: options.linkRegExp,
           tooltip: options.tooltip,
           imageButtonConfigurations: options.imageButtonConfigurations,
         ),
@@ -152,7 +150,7 @@ class QuillToolbarImageButton extends StatelessWidget {
           ?.call(imageUrl);
     }
     } catch (e) {
-      options.imageButtonConfigurations.onErrorCall!(source);
+      options.imageButtonConfigurations.onErrorCall?.call(source);
     }
   }
 
