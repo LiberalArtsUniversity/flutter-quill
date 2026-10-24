@@ -191,7 +191,8 @@ mixin RawEditorStateTextInputClientMixin on EditorState
     // 参考: https://github.com/singerdmx/flutter-quill/issues/2710
     if (composingRange.isValid && composingRange.end <= value.text.length) {
       if (actualValue.text == _lastKnownRemoteTextEditingValue!.text &&
-          actualValue.selection != _lastKnownRemoteTextEditingValue!.selection) {
+          actualValue.selection !=
+              _lastKnownRemoteTextEditingValue!.selection) {
         _lastKnownRemoteTextEditingValue = actualValue;
         _textInputConnection!.setEditingState(actualValue);
       }
@@ -214,6 +215,11 @@ mixin RawEditorStateTextInputClientMixin on EditorState
   // autofill is not needed
   @override
   AutofillScope? get currentAutofillScope => null;
+
+  // プラットフォームからのフォーカス復帰はブラウザのオートフィル用のため、
+  // オートフィル非対応のこのエディタではフォーカスを取得しない
+  @override
+  bool onFocusReceived() => false;
 
   @override
   void updateEditingValue(TextEditingValue value) {
